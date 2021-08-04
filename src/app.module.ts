@@ -7,6 +7,9 @@ import { RestaurantsModule } from './restaurants/restaurants.module';
 import { Restaurant } from './restaurants/entities/restaurant.entity';
 import { AdminModule } from './admin/admin.module';
 import { Admin } from './admin/entities/admin.entity';
+import { UsersModule } from './users/users.module';
+import { CommonModule } from './common/common.module';
+import { User } from './users/entities/user.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -30,15 +33,16 @@ import { Admin } from './admin/entities/admin.entity';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       // synchronize: process.env.NODE_ENV !== 'prod',
-      synchronize: false,
+      synchronize: true,
       logging: true,
-      entities: [Restaurant, Admin],
+      entities: [Admin, User],
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
     }),
-    RestaurantsModule,
     AdminModule,
+    UsersModule,
+    CommonModule,
   ],
   controllers: [],
   providers: [],
