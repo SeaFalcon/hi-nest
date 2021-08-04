@@ -12,6 +12,7 @@ export class RestaurantResolver {
   restaurants(): Promise<Restaurant[]> {
     return this.restaurantService.getAll();
   }
+
   @Mutation(() => Boolean)
   async createRestaurant(
     @Args('input') createResturantInput: CreateRestaurantDto,
