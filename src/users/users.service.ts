@@ -6,6 +6,8 @@ import { CreateAccountInput } from './dtos/create-account.dto';
 import { LoginInput } from './dtos/login.dto';
 import { JwtService } from '../jwt/jwt.service';
 import { EditProfileInput } from './dtos/edit-profile.dto';
+import { Verification } from './entities/verification.entity';
+import { VerifyEmailOutput } from './dtos/verify-email.dto';
 
 @Injectable()
 export class UsersService {
@@ -13,6 +15,8 @@ export class UsersService {
     @InjectRepository(User)
     private readonly users: Repository<User>,
     private readonly jwtService: JwtService,
+    @InjectRepository(Verification)
+    private readonly verification: Repository<Verification>,
   ) {}
 
   async createAccount({
@@ -27,7 +31,17 @@ export class UsersService {
         // make error
         return { ok: false, error: 'There is a user with that email already' };
       }
-      await this.users.save(this.users.create({ email, password, role }));
+
+      const user = await this.users.save(
+        this.users.create({ email, password, role }),
+      );
+
+      await this.verification.save(
+        this.verification.create({
+          user,
+        }),
+      );
+
       return { ok: true };
     } catch (e) {
       // make error
@@ -49,6 +63,8 @@ export class UsersService {
           error: 'User not found',
         };
       }
+
+      console.log(email, password, user);
 
       // check if the password is correct
       const passwordCorrect = await user.checkPassword(password);
@@ -83,6 +99,8 @@ export class UsersService {
 
     if (email) {
       user.email = email;
+      user.verified = false;
+      await this.verification.save(this.verification.create({ user }));
     }
 
     if (password) {
@@ -90,5 +108,23 @@ export class UsersService {
     }
 
     return this.users.save(user);
+  }
+
+  async verifyEmail(code: string): Promise<boolean> {
+    try {
+      const verification = await this.verification.findOne(
+        { code },
+        { relations: ['user'] },
+      );
+      if (verification) {
+        verification.user.verified = true;
+        this.users.save(verification.user);
+        return true;
+      }
+      throw new Error();
+    } catch (e) {
+      console.log(e);
+      return false;
+    }
   }
 }

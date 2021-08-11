@@ -11,11 +11,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminModule } from './admin/admin.module';
 import { Admin } from './admin/entities/admin.entity';
 import { UsersModule } from './users/users.module';
-import { CommonModule } from './common/common.module';
 import { User } from './users/entities/user.entity';
 import { JwtModule } from './jwt/jwt.module';
 import { JWTMiddleware } from './jwt/jwt.middleware';
-import { AuthModule } from './auth/auth.module';
+import { Verification } from './users/entities/verification.entity';
 
 @Module({
   imports: [
@@ -42,7 +41,7 @@ import { AuthModule } from './auth/auth.module';
       // synchronize: process.env.NODE_ENV !== 'prod',
       synchronize: true,
       logging: true,
-      entities: [Admin, User],
+      entities: [Admin, User, Verification],
     }),
     GraphQLModule.forRoot({
       autoSchemaFile: true,
