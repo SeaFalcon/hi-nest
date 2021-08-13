@@ -44,11 +44,13 @@ export class UsersService {
           user,
         }),
       );
+
       this.mailService.sendVerificationEmail(user.email, verification.code);
 
       return { ok: true };
     } catch (e) {
       // make error
+      console.log(e);
       return { ok: false, error: "Couldn't create account" };
     }
     // create user & hash the password
@@ -64,6 +66,7 @@ export class UsersService {
         { email },
         { select: ['id', 'password'] },
       );
+
       if (!user) {
         return {
           ok: false,
@@ -97,7 +100,7 @@ export class UsersService {
 
   async findById(id: number): Promise<UserProfileOutput> {
     try {
-      const user = await this.users.findOne({ id });
+      const user = await this.users.findOneOrFail({ id });
       if (user) {
         return {
           ok: true,
@@ -124,7 +127,9 @@ export class UsersService {
       if (password) {
         user.password = password;
       }
+      console.log(user);
       await this.users.save(user);
+      console.log(user);
       return {
         ok: true,
       };
