@@ -50,7 +50,7 @@ export class UsersService {
       return { ok: true };
     } catch (e) {
       // make error
-      console.log(e);
+      // console.log(e);
       return { ok: false, error: "Couldn't create account" };
     }
     // create user & hash the password
@@ -101,12 +101,11 @@ export class UsersService {
   async findById(id: number): Promise<UserProfileOutput> {
     try {
       const user = await this.users.findOneOrFail({ id });
-      if (user) {
-        return {
-          ok: true,
-          user: user,
-        };
-      }
+
+      return {
+        ok: true,
+        user: user,
+      };
     } catch (error) {
       return { ok: false, error: 'User Not Found' };
     }
@@ -127,9 +126,9 @@ export class UsersService {
       if (password) {
         user.password = password;
       }
-      console.log(user);
+
       await this.users.save(user);
-      console.log(user);
+
       return {
         ok: true,
       };
@@ -152,7 +151,7 @@ export class UsersService {
       }
       return { ok: false, error: 'Verification not found.' };
     } catch (error) {
-      return { ok: false, error };
+      return { ok: false, error: 'Could not verify email.' };
     }
   }
 
