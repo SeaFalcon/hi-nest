@@ -6,8 +6,8 @@ import { Restaurant } from './entities/restaurant.entity';
 export class RestaurantsController {
   constructor(private readonly restaurantService: RestaurantService) {}
 
-  @Get()
-  getAll(): Promise<Restaurant[]> {
-    return this.restaurantService.getAll();
-  }
+  // @Get()
+  // getAll(): Promise<Restaurant[]> {
+  // return this.restaurantService.getAll();
+  // }
 }

@@ -12,7 +12,7 @@ import { AuthUser } from '../auth/auth-user.decorator';
 import { UserProfileInput, UserProfileOutput } from './dtos/user-profile.dto';
 import { EditProfileInput, EditProfileOutput } from './dtos/edit-profile.dto';
 import { VerifyEmailInput, VerifyEmailOutput } from './dtos/verify-email.dto';
-import { Verification } from './entities/verification.entity';
+import { Role } from 'src/auth/role.decorator';
 
 @Resolver(() => User)
 export class UsersResolver {
@@ -31,21 +31,21 @@ export class UsersResolver {
   }
 
   @Query(() => User)
-  @UseGuards(AuthGuard)
+  @Role(['Any'])
   me(@AuthUser() authUser: User) {
     return authUser;
   }
 
   @Query(() => UserProfileOutput)
-  @UseGuards(AuthGuard)
+  @Role(['Any'])
   async userProfile(
     @Args() userProfileInput: UserProfileInput,
   ): Promise<UserProfileOutput> {
     return this.usersService.findById(userProfileInput.userId);
   }
 
-  @UseGuards(AuthGuard)
   @Mutation(() => EditProfileOutput)
+  @Role(['Any'])
   async editProfile(
     @AuthUser() AuthUser: User,
     @Args('input') editProfileInput: EditProfileInput,

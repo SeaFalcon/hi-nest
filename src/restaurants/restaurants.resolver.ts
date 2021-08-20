@@ -1,40 +1,39 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { Restaurant } from './entities/restaurant.entity';
-import { CreateRestaurantDto } from './dtos/create-restaurant.dto';
+import {
+  CreateRestaurantInput,
+  CreateRestaurantOutput,
+} from './dtos/create-restaurant.dto';
 import { RestaurantService } from './restaurants.service';
-import { UpdateRestaurantDto } from './dtos/update-restaurant.dto';
+import { AuthUser } from 'src/auth/auth-user.decorator';
+import { User } from 'src/users/entities/user.entity';
+import { Role } from 'src/auth/role.decorator';
+import {
+  EditRestaurantInput,
+  EditRestaurantOutput,
+} from './dtos/edit-restaurant.dto';
 
 @Resolver(() => Restaurant)
 export class RestaurantResolver {
   constructor(private readonly restaurantService: RestaurantService) {}
-
-  @Query(() => [Restaurant])
-  restaurants(): Promise<Restaurant[]> {
-    return this.restaurantService.getAll();
-  }
-
-  @Mutation(() => Boolean)
+  @Mutation(() => CreateRestaurantOutput)
+  @Role(['Owner'])
   async createRestaurant(
-    @Args('input') createResturantInput: CreateRestaurantDto,
-  ): Promise<boolean> {
-    try {
-      await this.restaurantService.createRestaurant(createResturantInput);
-      return true;
-    } catch (e) {
-      console.log(e);
-      return false;
-    }
+    @Args('input') createResturantInput: CreateRestaurantInput,
+    @AuthUser() authUser: User,
+  ): Promise<CreateRestaurantOutput> {
+    return this.restaurantService.createRestaurant(
+      authUser,
+      createResturantInput,
+    );
   }
 
-  @Mutation(() => Boolean)
-  async updateRestaurant(
-    @Args('input') updateRestaurantDto: UpdateRestaurantDto,
-  ) {
-    try {
-      await this.restaurantService.updateRestaurant(updateRestaurantDto);
-      return true;
-    } catch (e) {
-      return false;
-    }
+  @Mutation(() => EditRestaurantOutput)
+  @Role(['Owner'])
+  editRestaurant(
+    @AuthUser() authUser: User,
+    @Args('input') editRestaurantInput: EditRestaurantInput,
+  ): EditRestaurantOutput {
+    return { ok: true };
   }
 }
