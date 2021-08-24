@@ -38,4 +38,5 @@ export class Restaurant extends CoreEntity {
 
   @RelationId((restaurant: Restaurant) => restaurant.owner)
   ownerId: number;
+  newRestaurant: Promise<Category>;
 }
